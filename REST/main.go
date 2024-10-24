@@ -1,49 +1,25 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-type Article struct {
-	Title   string `json:"Title"`
-	Desc    string `json:"desc"`
-	Content string `json:"content"`
-}
+func initializeRouter() {
+	r := mux.NewRouter()
 
-type Articles []Article
+	r.HandleFunc("/users", GetUsers).Methods("GET")
+	r.HandleFunc("/users/{id}", GetUser).Methods("GET")
+	r.HandleFunc("/users", CreateUser).Methods("POST")
+	r.HandleFunc("/users/{id}", UpdateUser).Methods("PUT")
+	r.HandleFunc("/users/{id}", DeleteUser).Methods("DELETE")
 
-func allArticles(w http.ResponseWriter, r *http.Request) {
-	articles := Articles{
-		Article{Title: "Test Title", Desc: "Test Description", Content: "Hello World"},
-	}
-
-	fmt.Println("Endpoint Hit: All Articles Endpoint")
-	json.NewEncoder(w).Encode(articles)
-}
-
-func testPostArticles(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Test POST endpoint worked")
-}
-
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Homepage endpoint hit")
-}
-
-func handleRequest() {
-
-	myRouter := mux.NewRouter().StrictSlash(true)
-
-	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/articles", allArticles).Methods("GET")
-	myRouter.HandleFunc("/articles", testPostArticles).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8081", myRouter))
+	log.Fatal(http.ListenAndServe(":9000", r))
 }
 
 func main() {
-	handleRequest()
+	InitialMigration()
+	initializeRouter()
 }
